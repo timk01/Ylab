@@ -19,20 +19,21 @@ public class GuessSolution {
 
     private static void numberGuessGame(int number) {
         int userAttempts = 0;
-        Scanner scanner = new Scanner(System.in);
-        while (maxUserAttempts > 0) {
-            int userGuessedNumber = requestPositiveNaturalNumberWithThreshold(scanner, LOWER_THRESHOLD, UPPER_THRESHOLD);
-            userAttempts++;
-            if (userGuessedNumber == number) {
-                System.out.println("Ты угадал с " + userAttempts + " попытки");
-                break;
-            } else if (userGuessedNumber > number) {
-                System.out.println("Мое число меньше! У тебя осталось " + --maxUserAttempts + " попыток");
-            } else {
-                System.out.println("Мое число больше! У тебя осталось " + --maxUserAttempts + " попыток");
-            }
-            if (maxUserAttempts == 0) {
-                System.out.print("Ты не угадал");
+        try (Scanner scanner = new Scanner(System.in)) {
+            while (maxUserAttempts > 0) {
+                int userGuessedNumber = requestPositiveNaturalNumberWithThreshold(scanner, LOWER_THRESHOLD, UPPER_THRESHOLD);
+                userAttempts++;
+                if (userGuessedNumber == number) {
+                    System.out.println("Ты угадал с " + userAttempts + " попытки");
+                    break;
+                } else if (userGuessedNumber > number) {
+                    System.out.println("Мое число меньше! У тебя осталось " + --maxUserAttempts + " попыток");
+                } else {
+                    System.out.println("Мое число больше! У тебя осталось " + --maxUserAttempts + " попыток");
+                }
+                if (maxUserAttempts == 0) {
+                    System.out.print("Ты не угадал");
+                }
             }
         }
     }
