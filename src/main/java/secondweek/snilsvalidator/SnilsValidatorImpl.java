@@ -11,17 +11,23 @@ public class SnilsValidatorImpl implements SnilsValidator {
 
     @Override
     public boolean validate(String snils) {
+        if (isSnilsBad(snils)) return false;
+
+        int sumOfNumbers = getSumOfNumbers(snils);
+
+        int controlSum = getControlSum(sumOfNumbers);
+
+        return controlSum == Integer.parseInt(snils.substring(neededLength - lesserNumbersSize, neededLength));
+    }
+
+    private boolean isSnilsBad(String snils) {
         if (snils == null || snils.length() != neededLength || !snils.matches(onlyNumbersRegex)) {
-            return false;
+            return true;
         }
+        return false;
+    }
 
-        int sumOfNumbers = ZERO;
-        int controlNumberLength = neededLength - lesserNumbersSize;
-        for (int i = ZERO; i < neededLength - lesserNumbersSize; i++) {
-            int parsedInt = Integer.parseInt(String.valueOf(snils.charAt(i)));
-            sumOfNumbers = sumOfNumbers + parsedInt * controlNumberLength--;
-        }
-
+    private int getControlSum(int sumOfNumbers) {
         int controlSum;
         if (sumOfNumbers < oneHundred) {
             controlSum = sumOfNumbers;
@@ -31,7 +37,16 @@ public class SnilsValidatorImpl implements SnilsValidator {
             int remainder = sumOfNumbers % oneHundredOne;
             controlSum = remainder == oneHundred ? ZERO : remainder;
         }
+        return controlSum;
+    }
 
-        return controlSum == Integer.parseInt(snils.substring(neededLength - lesserNumbersSize, neededLength));
+    private int getSumOfNumbers(String snils) {
+        int sumOfNumbers = ZERO;
+        int controlNumberLength = neededLength - lesserNumbersSize;
+        for (int i = ZERO; i < neededLength - lesserNumbersSize; i++) {
+            int parsedInt = Integer.parseInt(String.valueOf(snils.charAt(i)));
+            sumOfNumbers = sumOfNumbers + parsedInt * controlNumberLength--;
+        }
+        return sumOfNumbers;
     }
 }
