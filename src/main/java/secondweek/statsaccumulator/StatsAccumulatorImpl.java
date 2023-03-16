@@ -1,42 +1,52 @@
 package secondweek.statsaccumulator;
 
-public class StatsAccumulatorImpl implements StatsAccumulator {
-    private static final int ZERO = 0;
-    private static final int ONE = 1;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
-    private int sumOfNumbers;
+public class StatsAccumulatorImpl implements StatsAccumulator {
+    private static final int ROUNDING_PRECISION = 15;
+
     private int count;
     private int min;
     private int max;
+    private double averageOfNumbers;
+
+    public StatsAccumulatorImpl() {
+        this.count = 0;
+        this.min = 0;
+        this.max = 0;
+        this.averageOfNumbers = 0.0;
+    }
 
     @Override
     public void add(int value) {
-        this.sumOfNumbers += value;
-        this.count++;
-        this.min = this.count == ONE ? this.sumOfNumbers : Integer.min(value, this.min);
-        this.max = this.count == ONE ? this.sumOfNumbers : Integer.max(value, this.max);
+        BigDecimal sumBeforeAddingNewNumber = BigDecimal.valueOf(this.averageOfNumbers * this.count);
+        this.count = Math.addExact(this.count, 1);
+        this.min = this.count == 1 ? value : Integer.min(value, this.min);
+        this.max = this.count == 1 ? value : Integer.max(value, this.max);
+        BigDecimal sumAfterAddingNewNumber = sumBeforeAddingNewNumber.add(BigDecimal.valueOf(value));
+        BigDecimal dividend = new BigDecimal(this.count);
+        this.averageOfNumbers = sumAfterAddingNewNumber
+                .divide(dividend, ROUNDING_PRECISION, RoundingMode.CEILING).doubleValue();
     }
 
     @Override
     public int getMin() {
-        return min;
+        return this.min;
     }
 
     @Override
     public int getMax() {
-        return max;
+        return this.max;
     }
 
     @Override
     public int getCount() {
-        return count;
+        return this.count;
     }
 
     @Override
     public Double getAvg() {
-        if (count == ZERO) {
-            return (double) sumOfNumbers;
-        }
-        return this.count == ONE ? this.sumOfNumbers : (double) this.sumOfNumbers / this.count;
+        return this.averageOfNumbers;
     }
 }

@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class RateLimitedPrinterTest {
 
-    private final RateLimitedPrinter rateLimitedPrinter = new RateLimitedPrinter(1000);
+    private RateLimitedPrinter rateLimitedPrinter;
     private final PrintStream standardOut = System.out;
     private final ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
 
@@ -26,26 +26,26 @@ class RateLimitedPrinterTest {
     }
 
     @Test
-    void printSuccess() {
-        long start = System.currentTimeMillis();
-        String expectedFifthValue = "123\r\n";
-        for (int i = 0; i < 100000000L; i++) {
+    void print_Success() {
+        rateLimitedPrinter = new RateLimitedPrinter(1000);
+        String expectedValue = String.format("%d%n", 123);
+        for (int i = 0; i < 100; i++) {
             rateLimitedPrinter.print("123");
         }
-        long end = System.currentTimeMillis();
-        assertTrue(end - start < rateLimitedPrinter.getInterval());
-        assertEquals(expectedFifthValue, outputStreamCaptor.toString());
+        assertEquals(expectedValue, outputStreamCaptor.toString());
     }
 
     @Test
-    void printFail() {
-        long start = System.currentTimeMillis();
-        String expectedFifthValue = "123\r\n";
-        for (int i = 0; i < 1000000000L; i++) {
+    void print_Fail() throws InterruptedException {
+        rateLimitedPrinter = new RateLimitedPrinter(1000);
+        String expectedValue = String.format("%d%n", 123);
+        for (int i = 0; i < 100; i++) {
             rateLimitedPrinter.print("123");
         }
-        long end = System.currentTimeMillis();
-        assertFalse(end - start < rateLimitedPrinter.getInterval());
-        assertNotEquals(expectedFifthValue, outputStreamCaptor.toString());
+        Thread.sleep(1000);
+        for (int i = 0; i < 100; i++) {
+            rateLimitedPrinter.print("123");
+        }
+        assertNotEquals(expectedValue, outputStreamCaptor.toString());
     }
 }

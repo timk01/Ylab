@@ -9,6 +9,14 @@ public class StatsAccumulatorTest {
         System.out.println(statsAccumulator.getMax());
         System.out.println(statsAccumulator.getCount());
 
+        statsAccumulator.add(0);
+        System.out.println(statsAccumulator.getAvg());
+
+        System.out.println(statsAccumulator.getAvg());
+        System.out.println(statsAccumulator.getMin());
+        System.out.println(statsAccumulator.getMax());
+        System.out.println(statsAccumulator.getCount());
+
         statsAccumulator.add(1);
         System.out.println(statsAccumulator.getAvg());
         System.out.println(statsAccumulator.getMin());

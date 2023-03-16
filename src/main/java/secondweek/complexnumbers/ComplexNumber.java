@@ -1,5 +1,9 @@
 package secondweek.complexnumbers;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
+
 /**
  * Represents a ComplexNumber.
  *
@@ -7,9 +11,10 @@ package secondweek.complexnumbers;
  * @version 1.0
  */
 public final class ComplexNumber {
+    private static final int ROUNDING_PRECISION = 15;
+
     private final double complexRealPart;
     private final double complexImaginaryPart;
-    private static final double ZERO = 0.0;
 
     /**
      * First constructor for class ComplexNumber
@@ -50,10 +55,11 @@ public final class ComplexNumber {
      * @return new instance of ComplexNumber
      */
     public ComplexNumber addition(ComplexNumber complexNumber) {
-        return new ComplexNumber(
-                complexRealPart + complexNumber.getComplexRealPart(),
-                complexImaginaryPart + complexNumber.getComplexImaginaryPart()
-        );
+        double complexPartAddition = (BigDecimal.valueOf(complexRealPart)
+                .add(BigDecimal.valueOf(complexNumber.getComplexRealPart()))).doubleValue();
+        double imaginaryPartAddition = (BigDecimal.valueOf(complexImaginaryPart)
+                .add(BigDecimal.valueOf(complexNumber.getComplexImaginaryPart()))).doubleValue();
+        return new ComplexNumber(complexPartAddition, imaginaryPartAddition);
     }
 
     /**
@@ -63,10 +69,11 @@ public final class ComplexNumber {
      * @return new instance of ComplexNumber
      */
     public ComplexNumber subtraction(ComplexNumber complexNumber) {
-        return new ComplexNumber(
-                complexRealPart - complexNumber.getComplexRealPart(),
-                complexImaginaryPart - complexNumber.getComplexImaginaryPart()
-        );
+        double complexPartAddition = (BigDecimal.valueOf(complexRealPart)
+                .subtract(BigDecimal.valueOf(complexNumber.getComplexRealPart()))).doubleValue();
+        double imaginaryPartAddition = (BigDecimal.valueOf(complexImaginaryPart)
+                .subtract(BigDecimal.valueOf(complexNumber.getComplexImaginaryPart()))).doubleValue();
+        return new ComplexNumber(complexPartAddition, imaginaryPartAddition);
     }
 
     /**
@@ -76,10 +83,24 @@ public final class ComplexNumber {
      * @return new instance of ComplexNumber
      */
     public ComplexNumber multiplication(ComplexNumber complexNumber) {
-        return new ComplexNumber(
-                complexRealPart * complexNumber.getComplexRealPart() - complexImaginaryPart * complexNumber.getComplexImaginaryPart(),
-                complexImaginaryPart * complexNumber.getComplexRealPart() + complexRealPart * complexNumber.getComplexImaginaryPart()
-        );
+        BigDecimal twoComplexPartsMultiplication = BigDecimal.valueOf(complexRealPart)
+                .multiply(BigDecimal.valueOf(complexNumber.getComplexRealPart()));
+        BigDecimal twoImaginaryPartsMultiplication = BigDecimal.valueOf(complexImaginaryPart)
+                .multiply(BigDecimal.valueOf(complexNumber.getComplexImaginaryPart()));
+        double complexRealPartForComplexNumber = (twoComplexPartsMultiplication
+                .subtract(twoImaginaryPartsMultiplication))
+                .doubleValue();
+
+
+        BigDecimal complexImaginaryPartOnComplexRealPartMultiplication = BigDecimal.valueOf(complexImaginaryPart)
+                .multiply(BigDecimal.valueOf(complexNumber.getComplexRealPart()));
+        BigDecimal complexRealPartOnComplexImaginaryPartMultiplication = BigDecimal.valueOf(complexRealPart)
+                .multiply(BigDecimal.valueOf(complexNumber.getComplexImaginaryPart()));
+        double complexImaginaryPartForComplexNumber = complexImaginaryPartOnComplexRealPartMultiplication
+                .add(complexRealPartOnComplexImaginaryPartMultiplication)
+                .doubleValue();
+
+        return new ComplexNumber(complexRealPartForComplexNumber, complexImaginaryPartForComplexNumber);
     }
 
     /**
@@ -88,13 +109,17 @@ public final class ComplexNumber {
      * @return number of Double type
      */
     public Double modulus() {
-        return Math.sqrt(Math.pow(complexRealPart, 2) + Math.pow(complexImaginaryPart, 2));
+        BigDecimal complexRealPartPow = BigDecimal.valueOf(complexRealPart).pow(2);
+        BigDecimal complexImaginaryPartPow = BigDecimal.valueOf(complexImaginaryPart).pow(2);
+
+        MathContext mc = new MathContext(ROUNDING_PRECISION, RoundingMode.HALF_UP);
+        return (complexRealPartPow.add(complexImaginaryPartPow)).sqrt(mc).doubleValue();
     }
 
     @Override
     public String toString() {
         StringBuilder aStringToShow = new StringBuilder().append(complexRealPart);
-        if (Double.compare(complexImaginaryPart, ZERO) >= 0) {
+        if (Double.compare(complexImaginaryPart, 0) >= 0) {
             aStringToShow.append("+").append(complexImaginaryPart).append("i");
         } else {
             aStringToShow.append(complexImaginaryPart).append("i");

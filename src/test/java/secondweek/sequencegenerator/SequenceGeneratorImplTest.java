@@ -1,7 +1,6 @@
 package secondweek.sequencegenerator;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,6 +15,10 @@ class SequenceGeneratorImplTest {
     private final PrintStream standardOut = System.out;
     private final ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
 
+    private final String aStringFormatForFiveNumbersSequence = "%d%n%d%n%d%n%d%n%d%n";
+    private final String aStringFormatForSixNumbersSequence = aStringFormatForFiveNumbersSequence + "%d%n";
+    private final String aStringFormatForSevenNumbersSequence = aStringFormatForSixNumbersSequence + "%d%n";
+
     @BeforeEach
     public void setUp() {
         System.setOut(new PrintStream(outputStreamCaptor));
@@ -27,71 +30,71 @@ class SequenceGeneratorImplTest {
     }
 
     @Test
-    void aSuccess() {
-        String expectedStringValue = "2\r\n4\r\n6\r\n8\r\n10\r\n";
+    void a_Sequence_Success() {
+        String expectedStringValue = String.format(aStringFormatForFiveNumbersSequence, 2, 4, 6, 8, 10);
         sequenceGenerator.a(5);
         assertEquals(expectedStringValue, outputStreamCaptor.toString());
     }
 
     @Test
-    void bSuccess() {
-        String expectedStringValue = "1\r\n3\r\n5\r\n7\r\n9\r\n";
+    void b_Sequence_Success() {
+        String expectedStringValue = String.format(aStringFormatForFiveNumbersSequence, 1, 3, 5, 7, 9);
         sequenceGenerator.b(5);
         assertEquals(expectedStringValue, outputStreamCaptor.toString());
     }
 
     @Test
-    void cSuccess() {
-        String expectedStringValue = "1\r\n4\r\n9\r\n16\r\n25\r\n";
+    void c_Sequence_Success() {
+        String expectedStringValue = String.format(aStringFormatForFiveNumbersSequence, 1, 4, 9, 16, 25);
         sequenceGenerator.c(5);
         assertEquals(expectedStringValue, outputStreamCaptor.toString());
     }
 
     @Test
-    void dSuccess() {
-        String expectedStringValue = "1\r\n8\r\n27\r\n64\r\n125\r\n";
+    void d_Sequence_Success() {
+        String expectedStringValue = String.format(aStringFormatForFiveNumbersSequence, 1, 8, 27, 64, 125);
         sequenceGenerator.d(5);
         assertEquals(expectedStringValue, outputStreamCaptor.toString());
     }
 
     @Test
-    void eSuccess() {
-        String expectedStringValue = "1\r\n-1\r\n1\r\n-1\r\n1\r\n-1\r\n";
+    void e_Sequence_Success() {
+        String expectedStringValue = String.format(aStringFormatForSixNumbersSequence, 1, -1, 1, -1, 1, -1);
         sequenceGenerator.e(6);
         assertEquals(expectedStringValue, outputStreamCaptor.toString());
     }
 
     @Test
-    void fSuccess() {
-        String expectedStringValue = "1\r\n-2\r\n3\r\n-4\r\n5\r\n";
+    void f_Sequence_Success() {
+        String expectedStringValue = String.format(aStringFormatForFiveNumbersSequence, 1, -2, 3, -4, 5);
         sequenceGenerator.f(5);
         assertEquals(expectedStringValue, outputStreamCaptor.toString());
     }
 
     @Test
-    void gSuccess() {
-        String expectedStringValue = "1\r\n-4\r\n9\r\n-16\r\n25\r\n";
+    void g_Sequence_Success() {
+        String expectedStringValue = String.format(aStringFormatForFiveNumbersSequence, 1, -4, 9, -16, 25);
         sequenceGenerator.g(5);
         assertEquals(expectedStringValue, outputStreamCaptor.toString());
     }
 
     @Test
-    void hSuccess() {
-        String expectedStringValue = "1\r\n0\r\n2\r\n0\r\n3\r\n0\r\n";
+    void h_Sequence_Success() {
+        String expectedStringValue = String.format(aStringFormatForSixNumbersSequence, 1, 0, 2, 0, 3, 0);
         sequenceGenerator.h(6);
         assertEquals(expectedStringValue, outputStreamCaptor.toString());
     }
 
     @Test
-    void iSuccess() {
-        String expectedStringValue = "1\r\n2\r\n6\r\n24\r\n120\r\n720\r\n";
+    void i_Sequence_Success() {
+        String expectedStringValue = String.format(aStringFormatForSixNumbersSequence, 1, 2, 6, 24, 120, 720);
         sequenceGenerator.i(6);
         assertEquals(expectedStringValue, outputStreamCaptor.toString());
     }
 
     @Test
-    void jSuccess() {
-        String expectedStringValue = "1\r\n1\r\n2\r\n3\r\n5\r\n8\r\n13\r\n";
+    void j_Sequence_Success() {
+        String expectedStringValue = String.format(aStringFormatForSevenNumbersSequence, 1, 1, 2, 3, 5, 8, 13);
         sequenceGenerator.j(7);
         assertEquals(expectedStringValue, outputStreamCaptor.toString());
     }

@@ -1,13 +1,9 @@
 package secondweek.snilsvalidator;
 
 public class SnilsValidatorImpl implements SnilsValidator {
-    private final int neededLength = 11;
-    private final int lesserNumbersSize = 2;
-    private final int oneHundred = 100;
-    private final int oneHundredOne = 101;
-    private final String onlyNumbersRegex = "\\d+";
-
-    public static final int ZERO = 0;
+    private static final int SNILS_LENGTH = 11;
+    private static final int LESSER_NUMBERS_SNILS_SIZE = 2;
+    private static final String ONLY_NUMBERS_REGEX = "\\d+";
 
     @Override
     public boolean validate(String snils) {
@@ -17,11 +13,11 @@ public class SnilsValidatorImpl implements SnilsValidator {
 
         int controlSum = getControlSum(sumOfNumbers);
 
-        return controlSum == Integer.parseInt(snils.substring(neededLength - lesserNumbersSize, neededLength));
+        return controlSum == Integer.parseInt(snils.substring(SNILS_LENGTH - LESSER_NUMBERS_SNILS_SIZE, SNILS_LENGTH));
     }
 
     private boolean isSnilsBad(String snils) {
-        if (snils == null || snils.length() != neededLength || !snils.matches(onlyNumbersRegex)) {
+        if (snils == null || snils.length() != SNILS_LENGTH || !snils.matches(ONLY_NUMBERS_REGEX)) {
             return true;
         }
         return false;
@@ -29,23 +25,26 @@ public class SnilsValidatorImpl implements SnilsValidator {
 
     private int getControlSum(int sumOfNumbers) {
         int controlSum;
-        if (sumOfNumbers < oneHundred) {
+        int firstValueToCheck = 100;
+        int secondValueToCheck = 101;
+        if (sumOfNumbers < firstValueToCheck) {
             controlSum = sumOfNumbers;
-        } else if (sumOfNumbers == oneHundred) {
-            controlSum = ZERO;
+        } else if (sumOfNumbers == firstValueToCheck) {
+            controlSum = 0;
         } else {
-            int remainder = sumOfNumbers % oneHundredOne;
-            controlSum = remainder == oneHundred ? ZERO : remainder;
+            int remainder = sumOfNumbers % secondValueToCheck;
+            controlSum = remainder == firstValueToCheck ? 0 : remainder;
         }
         return controlSum;
     }
 
     private int getSumOfNumbers(String snils) {
-        int sumOfNumbers = ZERO;
-        int controlNumberLength = neededLength - lesserNumbersSize;
-        for (int i = ZERO; i < neededLength - lesserNumbersSize; i++) {
+        int sumOfNumbers = 0;
+        int controlNumberLength = SNILS_LENGTH - LESSER_NUMBERS_SNILS_SIZE;
+        for (int i = 0; i < SNILS_LENGTH - LESSER_NUMBERS_SNILS_SIZE; i++) {
             int parsedInt = Integer.parseInt(String.valueOf(snils.charAt(i)));
-            sumOfNumbers = sumOfNumbers + parsedInt * controlNumberLength--;
+            sumOfNumbers = sumOfNumbers + parsedInt * controlNumberLength;
+            controlNumberLength--;
         }
         return sumOfNumbers;
     }

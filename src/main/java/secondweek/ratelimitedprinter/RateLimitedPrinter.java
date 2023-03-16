@@ -7,10 +7,9 @@ package secondweek.ratelimitedprinter;
  * @version 1.0
  */
 public class RateLimitedPrinter {
-    public static final int ZERO = 0;
-
     private final int interval;
     private long lastTimeConsolePrint;
+    private long currentTime;
 
     /**
      * Constructor for class RateLimitedPrinter
@@ -20,12 +19,8 @@ public class RateLimitedPrinter {
      * @param interval of type int
      */
     public RateLimitedPrinter(int interval) {
-        this.interval = Math.max(interval, ZERO);
-        this.lastTimeConsolePrint = ZERO;
-    }
-
-    public int getInterval() {
-        return interval;
+        this.interval = Math.max(interval, 0);
+        this.lastTimeConsolePrint = 0;
     }
 
     /**
@@ -34,9 +29,10 @@ public class RateLimitedPrinter {
      * @param message of type String to print
      */
     public void print(String message) {
-        if (System.currentTimeMillis() - lastTimeConsolePrint >= interval) {
+        currentTime = System.currentTimeMillis();
+        if (currentTime - lastTimeConsolePrint >= interval) {
             System.out.println(message);
-            lastTimeConsolePrint = System.currentTimeMillis();
+            lastTimeConsolePrint = currentTime;
         }
     }
 }
