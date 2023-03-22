@@ -3,6 +3,21 @@ package thirdweek.filesort;
 import java.io.*;
 import java.util.*;
 
+/**
+ * Represents a Sorter class
+ * What is does is external sort of big file when we have to memory to do the whole operation in memory itself
+ * (say, the available memory is 1 GB and we try to sort the file of 10GB size)
+ * <p>
+ * Fisrt, what it does is splitting and reading original big file on shunks,
+ * preliminary sorting them AND writing to disk to temporary folder.
+ * Second, it gathers all the preliminary splitted and internally sorted files, takes the first values from them and
+ * merges into one file using PriorityQueue.
+ * <p>
+ * Lastly it deletes all temp data and closes streams.
+ *
+ * @author Khasmamedov T.
+ * @version 1.9
+ */
 public class Sorter {
     private static final int CHUNK_SIZE = 200_000; //suppose we have pretty low memory
 

@@ -1,8 +1,18 @@
 package thirdweek.orgstructure;
 
+import thirdweek.trasnliterator.Transliterator;
+
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents an Employee.
+ * Simple org structure where one employee usually has boss (though, it's not the case if he is his own boss)
+ * and subordinates (though, again, it's not the case if the person is on bottom of company hierarchy)
+ *
+ * @author Ylab
+ * @version 1.0
+ */
 public class Employee {
     private Long id;
     private Long bossId;
@@ -55,6 +65,11 @@ public class Employee {
         return subordinate;
     }
 
+    /**
+     * Somewhat stripped down method to help with avoiding cyclic reference
+     *
+     * @see OrgStructureParserImpl
+     */
     @Override
     public String toString() {
         return "id: " + id +

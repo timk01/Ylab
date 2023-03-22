@@ -4,7 +4,18 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+/**
+ * Represents a transliterator interface implementation.
+ * Here it's functionality is to convert symbols from cyrillic (Russian, for example) to english .
+ *
+ * @author Khasmamedov T.
+ * @version 1.2
+ */
 public class TransliteratorMainImpl implements Transliterator {
+    /**
+     * Simple Hashmap structure.
+     * Key = cyrillic Character (immutable), Value = appropriate english translate.
+     */
     private static final Map<Character, String> CYRILLIC_TO_ENGLISH_MAP = new HashMap<>();
 
     static {
@@ -43,6 +54,17 @@ public class TransliteratorMainImpl implements Transliterator {
         CYRILLIC_TO_ENGLISH_MAP.put('Я', "IA");
     }
 
+    /**
+     * Method for conversion (here from cyrillic to english alphabet)
+     * implementation of Transliterator interface
+     * <p>
+     * Traverses through initial string, checks via utility getProperStringFromMap if it's proper char
+     * and only if it is, adds to final string; otherwise adds original char
+     *
+     * @param source String used in conversion
+     * @return converted String
+     * @see Transliterator
+     */
     @Override
     public String transliterate(String source) {
         if (source == null) {
