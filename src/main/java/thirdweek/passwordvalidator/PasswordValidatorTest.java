@@ -1,8 +1,5 @@
 package thirdweek.passwordvalidator;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import static thirdweek.passwordvalidator.PasswordValidator.isDataValid;
 
 public class PasswordValidatorTest {
