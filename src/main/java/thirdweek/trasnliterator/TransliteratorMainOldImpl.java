@@ -11,7 +11,7 @@ import java.util.Map;
  * @author Khasmamedov T.
  * @version 1.2
  */
-public class TransliteratorMainImpl implements Transliterator {
+public class TransliteratorMainOldImpl implements Transliterator {
     /**
      * Simple Hashmap structure.
      * Key = cyrillic Character (immutable), Value = appropriate english translate.
@@ -74,14 +74,30 @@ public class TransliteratorMainImpl implements Transliterator {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < source.length(); i++) {
             char charToCheck = source.charAt(i);
+            //reinventing th wheel... is a burdensome stuff
+            String stringToAddToFinalString = getProperStringFromMap(charToCheck);
 
-            if (CYRILLIC_TO_ENGLISH_MAP.containsKey(charToCheck)) {
-                sb.append(CYRILLIC_TO_ENGLISH_MAP.get(charToCheck));
+            if (stringToAddToFinalString != null) {
+                sb.append(stringToAddToFinalString);
             } else {
                 sb.append(charToCheck);
             }
         }
 
         return sb.toString();
+    }
+
+    private String getProperStringFromMap(char charToCheck) {
+        Iterator<Map.Entry<Character, String>> iterator = CYRILLIC_TO_ENGLISH_MAP.entrySet().iterator();
+        boolean isMapKeyNotEqualToNeededChar = true;
+        String stringToAdd = null;
+        while (iterator.hasNext() && isMapKeyNotEqualToNeededChar) {
+            Map.Entry<Character, String> cyrillicMapEntry = iterator.next();
+            if (cyrillicMapEntry.getKey().equals(charToCheck)) {
+                stringToAdd = cyrillicMapEntry.getValue();
+                isMapKeyNotEqualToNeededChar = false;
+            }
+        }
+        return stringToAdd;
     }
 }
