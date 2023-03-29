@@ -1,11 +1,16 @@
 package io.ylab.intensive.lesson04.movie;
 
-import thirdweek.orgstructure.Employee;
-
 import javax.sql.DataSource;
-import java.io.*;
-import java.sql.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MovieLoaderImpl implements MovieLoader {
     private DataSource dataSource;
@@ -60,74 +65,64 @@ public class MovieLoaderImpl implements MovieLoader {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_MOVIE_INSERTION_STATEMENT)) {
 
-            for (Movie movie : movieList) {
-                Integer movieYear = movie.getYear();
-                if (movieYear == null) {
-                    statement.setNull(1, Types.INTEGER);
-                } else {
-                    statement.setInt(1, movieYear);
-                }
+            for (int i = 0; i < movieList.size(); i++) {
+                Movie movie = movieList.get(i);
+                int incrementedPositionCounter = 1;
 
-                Integer movieLength = movie.getLength();
-                if (movieLength == null) {
-                    statement.setNull(2, Types.INTEGER);
-                } else {
-                    statement.setInt(2, movieLength);
-                }
+                setupMovieFieldToIntegerType(statement, movie.getYear(), incrementedPositionCounter);
+                incrementedPositionCounter++;
 
-                String movieTitle = movie.getTitle();
-                if (movieTitle == null) {
-                    statement.setNull(3, Types.VARCHAR);
-                } else {
-                    statement.setString(3, movieTitle);
-                }
+                setupMovieFieldToIntegerType(statement, movie.getLength(), incrementedPositionCounter);
+                incrementedPositionCounter++;
 
-                String movieSubject = movie.getSubject();
-                if (movieSubject == null) {
-                    statement.setNull(4, Types.VARCHAR);
-                } else {
-                    statement.setString(4, movieSubject);
-                }
+                setupMovieFieldToVarcharType(statement, movie.getTitle(), incrementedPositionCounter);
+                incrementedPositionCounter++;
 
-                String movieActors = movie.getActors();
-                if (movieActors == null) {
-                    statement.setNull(5, Types.VARCHAR);
-                } else {
-                    statement.setString(5, movieActors);
-                }
+                setupMovieFieldToVarcharType(statement, movie.getSubject(), incrementedPositionCounter);
+                incrementedPositionCounter++;
 
-                String movieActress = movie.getActress();
-                if (movieActress == null) {
-                    statement.setNull(6, Types.VARCHAR);
-                } else {
-                    statement.setString(6, movieActress);
-                }
+                setupMovieFieldToVarcharType(statement, movie.getActors(), incrementedPositionCounter);
+                incrementedPositionCounter++;
 
-                String movieDirector = movie.getDirector();
-                if (movieDirector == null) {
-                    statement.setNull(7, Types.VARCHAR);
-                } else {
-                    statement.setString(7, movieDirector);
-                }
+                setupMovieFieldToVarcharType(statement, movie.getActress(), incrementedPositionCounter);
+                incrementedPositionCounter++;
 
-                Integer moviePopularity = movie.getPopularity();
-                if (moviePopularity == null) {
-                    statement.setNull(8, Types.INTEGER);
-                } else {
-                    statement.setInt(8, moviePopularity);
-                }
+                setupMovieFieldToVarcharType(statement, movie.getDirector(), incrementedPositionCounter);
+                incrementedPositionCounter++;
 
-                Boolean movieAwards = movie.getAwards();
-                if (movieAwards == null) {
-                    statement.setNull(9, Types.BOOLEAN);
-                } else {
-                    statement.setBoolean(9, movieAwards);
-                }
+                setupMovieFieldToIntegerType(statement, movie.getPopularity(), incrementedPositionCounter);
+                incrementedPositionCounter++;
+
+                setupMovieFieldToBooleanType(statement, movie.getAwards(), incrementedPositionCounter);
 
                 statement.addBatch();
             }
 
             statement.executeBatch();
+        }
+    }
+
+    private void setupMovieFieldToIntegerType(PreparedStatement statement, Integer integerValue, int position) throws SQLException {
+        if (integerValue == null) {
+            statement.setNull(position, Types.INTEGER);
+        } else {
+            statement.setInt(position, integerValue);
+        }
+    }
+
+    private void setupMovieFieldToVarcharType(PreparedStatement statement, String stringValue, int position) throws SQLException {
+        if (stringValue == null) {
+            statement.setNull(position, Types.VARCHAR);
+        } else {
+            statement.setString(position, stringValue);
+        }
+    }
+
+    private void setupMovieFieldToBooleanType(PreparedStatement statement, Boolean booleanValue, int position) throws SQLException {
+        if (booleanValue == null) {
+            statement.setNull(position, Types.BOOLEAN);
+        } else {
+            statement.setBoolean(position, booleanValue);
         }
     }
 }
