@@ -25,7 +25,9 @@ public class MovieLoaderImpl implements MovieLoader {
 
             batchDataLoad(movieList);
         } catch (IOException msg) {
-            System.err.println(msg);
+            System.err.println("get IOException in loadData" + msg);
+        } catch (SQLException msg) {
+            System.err.println("get SQLException in loadData" + msg);
         }
 
     }
@@ -54,7 +56,7 @@ public class MovieLoaderImpl implements MovieLoader {
         return movieList;
     }
 
-    private void batchDataLoad(List<Movie> movieList) {
+    private void batchDataLoad(List<Movie> movieList) throws SQLException {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_MOVIE_INSERTION_STATEMENT)) {
 
@@ -126,9 +128,6 @@ public class MovieLoaderImpl implements MovieLoader {
             }
 
             statement.executeBatch();
-
-        } catch (SQLException msg) {
-            System.err.println(msg);
         }
     }
 }
