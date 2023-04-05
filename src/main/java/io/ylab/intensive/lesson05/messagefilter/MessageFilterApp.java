@@ -1,77 +1,107 @@
 package io.ylab.intensive.lesson05.messagefilter;
 
+import com.rabbitmq.client.*;
 import io.ylab.intensive.lesson05.messagefilter.database.DataBaseIntegrator;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import java.io.File;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.regex.Pattern;
+import java.util.concurrent.TimeoutException;
 
 public class MessageFilterApp {
-    public static void main(String[] args) throws SQLException {
+    private static final String QUEUE_OUTPUT_NAME = "output";
+    private static final String QUEUE_INPUT_NAME = "input";
+    private static final String EXCHANGE_NAME = "exchange";
+
+    public static void main(String[] args) {
         AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext(Config.class);
         applicationContext.start();
+
         DataBaseIntegrator dataBaseIntegrator = applicationContext.getBean(DataBaseIntegrator.class);
-        dataBaseIntegrator.fillDbWithBadWords();
 
-        String splitter = "[ +.+,+;+?+!+\n+]";
-        String badWord = "!!!fuck!!!!fuck! fuck? fucker; fucking, fuck \n" +
-                "fucking \n" +
-                "!fucker! Fucking fucK afuck fucki";
-        String badWordChanged = "!!!f**k!!!!f**k! f**k? f****r; f*****g, f**k \n" +
-                "f*****g \n" +
-                "!f****r! F*****g f**K afuck fucki";
-        String[] split = badWord.split(splitter);
-        for (String s : split) {
-            System.out.println(s);
+
+        try {
+            dataBaseIntegrator.fillDbWithBadWords();
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
         }
-        String[] splittedN = badWordChanged.split(splitter);
-        List<String> stringList = Arrays.stream(splittedN).toList();
 
-        System.out.println();
+        ConnectionFactory connectionFactory = applicationContext.getBean(ConnectionFactory.class);
 
-        List<String> allBadWords = dataBaseIntegrator.findAllBadWords();
-        System.out.println(allBadWords);
+        try (Connection connection = connectionFactory.newConnection();
+             Channel channel = connection.createChannel()) {
 
-        StringBuilder sbForInitialString = new StringBuilder();
-        StringBuilder sb = new StringBuilder();
-        StringBuilder sbNew = new StringBuilder();
-        char[] chars = badWord.toCharArray();
+            while (!Thread.currentThread().isInterrupted()) {
+                GetResponse message = channel.basicGet(QUEUE_INPUT_NAME, true);
+                if (message != null) {
+                    String badWordMsg = new String(message.getBody());
+
+                    StringBuilder sbCensoredString = new StringBuilder();
+                    StringBuilder sb = new StringBuilder();
+                    StringBuilder sbNew = new StringBuilder();
+
+                    appendAllWordsButLast(dataBaseIntegrator, badWordMsg, sbCensoredString, sb, sbNew);
+
+                    appendLastWord(dataBaseIntegrator, badWordMsg, sbCensoredString);
+
+                    channel.exchangeDeclare(EXCHANGE_NAME, BuiltinExchangeType.TOPIC);
+                    channel.queueDeclare(QUEUE_OUTPUT_NAME, false, false, false, null);
+                    channel.queueBind(QUEUE_OUTPUT_NAME, EXCHANGE_NAME, "*");
+
+                    channel.basicPublish(EXCHANGE_NAME, "*", null, sbCensoredString.toString().getBytes());
+                }
+            }
+        } catch (IOException | SQLException e) {
+            System.err.println(e.getMessage());
+        } catch (TimeoutException e) {
+            System.err.println(e.getMessage());
+        }
+    }
+
+    private static void appendAllWordsButLast(DataBaseIntegrator dataBaseIntegrator, String badWordMsg,
+                                              StringBuilder sbCensoredString,
+                                              StringBuilder sb, StringBuilder sbNew) throws SQLException {
+        char[] chars = badWordMsg.toCharArray();
+
         for (int i = 0; i < chars.length; i++) {
             char aChar = chars[i];
             if (aChar == ' ' || aChar == '.' || aChar == ','
                     || aChar == ';' || aChar == '?' || aChar == '!' || aChar == '\n') {
-
-
-
-                sbNew.append(replaceAll(sb.toString(), '*'));
-
-                if (!sbNew.isEmpty()) {
-                    sbForInitialString.append(sbNew);
+                if (dataBaseIntegrator.isTheWordBad(sb.toString())) {
+                    sbNew.append(replaceAll(sb.toString(), '*'));
+                    if (!sbNew.isEmpty()) {
+                        sbCensoredString.append(sbNew);
+                        sb.setLength(0);
+                        sbNew.setLength(0);
+                    }
+                } else {
+                    sbCensoredString.append(sb);
                     sb.setLength(0);
-                    sbNew.setLength(0);
                 }
-                sbForInitialString.append(aChar);
-
+                sbCensoredString.append(aChar);
             } else {
                 sb.append(aChar);
             }
         }
-
-        System.out.println(sbForInitialString);
-
-
-        //обработал слова
-        //взял изначаль
-
     }
 
-    public static String replaceAll(String word, char replacer) {
+    private static void appendLastWord(DataBaseIntegrator dataBaseIntegrator,
+                                       String badWordMsg, StringBuilder sbCensoredString) throws SQLException {
+        String stringSplitter = "[ +.+,+;+?+!+\n+]";
+
+        String[] splittedString = badWordMsg.split(stringSplitter);
+
+        String s = splittedString[splittedString.length - 1];
+        if (!dataBaseIntegrator.isTheWordBad(s)) {
+            sbCensoredString.append(s);
+        } else {
+            sbCensoredString.append(replaceAll(s, '*'));
+        }
+    }
+
+    private static String replaceAll(String word, char replacer) {
         StringBuilder ret = new StringBuilder();
+
         if (word.length() > 2) {
             ret.append(word.charAt(0));
             for (int i = 1; i < word.length() - 1; i++) {

@@ -1,13 +1,13 @@
 package io.ylab.intensive.lesson05.messagefilter.database;
 
-import io.ylab.intensive.lesson05.eventsourcing.Person;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Component
 public class DataBaseIntegratorImpl implements DataBaseIntegrator {
@@ -20,12 +20,13 @@ public class DataBaseIntegratorImpl implements DataBaseIntegrator {
             word_id bigserial primary key,
             bad_word varchar)
             """;
-    private static final String FIND_ALL_BAD_WORDS_SQL = """
+    private static final String FIND_THE_BAD_WORD_QUERY = """
             SELECT *
             FROM bad_words_table
+            WHERE bad_word = LOWER(?)
             """;
     private static final String CLEAR_TABLE_QUERY = "delete from bad_words_table";
-    private static final String INSERT_QUERY = "insert into bad_words_table (bad_word) values (?)";
+    private static final String INSERT_QUERY = "insert into bad_words_table (bad_word) values (LOWER(?))";
 
     private final DataSource dataSource;
     private DatabaseMetaData databaseMetaData;
@@ -88,16 +89,18 @@ public class DataBaseIntegratorImpl implements DataBaseIntegrator {
     }
 
     @Override
-    public List<String> findAllBadWords() throws SQLException {
-        List<String> badWordsSting = new ArrayList<>();
+    public boolean isTheWordBad(String aBadWordForSearch) throws SQLException {
+        boolean isTheWordBad = false;
         try (java.sql.Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(FIND_ALL_BAD_WORDS_SQL)) {
+             PreparedStatement statement = connection.prepareStatement(FIND_THE_BAD_WORD_QUERY)) {
+            statement.setString(1, aBadWordForSearch);
             ResultSet resultSet = statement.executeQuery();
 
-            while (resultSet.next()) {
-                badWordsSting.add(resultSet.getString(1));
+            if (resultSet.next()) {
+                isTheWordBad = true;
             }
-            return badWordsSting;
+            resultSet.close();
         }
+        return isTheWordBad;
     }
 }
