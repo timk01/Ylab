@@ -6,6 +6,8 @@ import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.ConnectionFactory;
 import io.ylab.intensive.lesson05.eventsourcing.Person;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
@@ -39,6 +41,7 @@ public class PersonApiImpl implements PersonApi {
             FROM person
             WHERE person_id = ?
             """;
+    private static final Logger logger = LoggerFactory.getLogger(PersonApiImpl.class);
 
     public PersonApiImpl(DataSource dataSource, ConnectionFactory connectionFactory) {
         this.dataSource = dataSource;
@@ -50,7 +53,7 @@ public class PersonApiImpl implements PersonApi {
         try {
             sendMessage(DELETE_MESSAGE_TYPE, String.valueOf(personId).getBytes());
         } catch (IOException | TimeoutException e) {
-            System.err.println(e.getMessage());
+            logger.info(e.getMessage());
         }
     }
 
@@ -64,7 +67,7 @@ public class PersonApiImpl implements PersonApi {
                     middleName
             )));
         } catch (IOException | TimeoutException e) {
-            System.err.println(e.getMessage());
+            logger.info(e.getMessage());
         }
     }
 
@@ -97,7 +100,7 @@ public class PersonApiImpl implements PersonApi {
             }
 
         } catch (SQLException e) {
-            System.err.println(e.getMessage());
+            logger.info(e.getMessage());
         }
         return personList;
     }

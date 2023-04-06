@@ -7,9 +7,13 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
 import io.ylab.intensive.lesson05.eventsourcing.Person;
 import io.ylab.intensive.lesson05.eventsourcing.repository.PersonRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 public class DbApp {
 
@@ -17,8 +21,9 @@ public class DbApp {
     private static final String SAVE_MESSAGE_TYPE = "save";
     private static final String DELETE_MESSAGE_TYPE = "delete";
     private static final ObjectMapper mapper = new ObjectMapper();
+    private static final Logger logger = LoggerFactory.getLogger(DbApp.class);
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext(Config.class);
 
         PersonRepository personRepository = applicationContext.getBean(PersonRepository.class);
@@ -48,6 +53,8 @@ public class DbApp {
                 channel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> {
                 });
             }
+        } catch (IOException | TimeoutException e) {
+            logger.info(e.getMessage());
         }
     }
 }

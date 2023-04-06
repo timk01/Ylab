@@ -1,6 +1,8 @@
 package io.ylab.intensive.lesson05.eventsourcing.repository;
 
 import io.ylab.intensive.lesson05.eventsourcing.Person;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
@@ -14,6 +16,7 @@ import java.util.List;
 public class PersonRepositoryImpl implements PersonRepository {
 
     private final DataSource dataSource;
+    private static final Logger logger = LoggerFactory.getLogger(PersonRepositoryImpl.class);
 
     private static final String CREATE_PERSON_SQL = """
             INSERT INTO person
@@ -72,7 +75,7 @@ public class PersonRepositoryImpl implements PersonRepository {
             addParametersToStatement(statement, params);
             statement.executeUpdate();
         } catch (SQLException e) {
-            System.err.println(e.getMessage());
+            logger.info(e.getMessage());
         }
     }
 
@@ -87,7 +90,7 @@ public class PersonRepositoryImpl implements PersonRepository {
                 }
             }
         } catch (SQLException e) {
-            System.err.println(e.getMessage());
+            logger.info(e.getMessage());
         }
         return personList;
     }

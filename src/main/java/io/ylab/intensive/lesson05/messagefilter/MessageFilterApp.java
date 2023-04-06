@@ -31,7 +31,7 @@ public class MessageFilterApp {
         try {
             dataBaseIntegrator.fillDbWithBadWords();
         } catch (SQLException e) {
-            System.err.println(e.getMessage());
+            logger.info(e.getMessage());
         }
 
         ConnectionFactory connectionFactory = applicationContext.getBean(ConnectionFactory.class);
