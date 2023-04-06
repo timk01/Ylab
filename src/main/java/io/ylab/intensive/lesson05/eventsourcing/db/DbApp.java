@@ -7,7 +7,6 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
 import io.ylab.intensive.lesson05.eventsourcing.Person;
 import io.ylab.intensive.lesson05.eventsourcing.repository.PersonRepository;
-import io.ylab.intensive.lesson05.eventsourcing.repository.PersonRepositoryImpl;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.util.Map;

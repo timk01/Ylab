@@ -86,7 +86,7 @@ public class SQLQueryBuilderImpl implements SQLQueryBuilder {
     private void fillSelectQuery(String tableName, List<String> columnNameList) {
         querySelectSb.setLength(0);
         querySelectSb.append("SELECT");
-        int reducedByOneListSize = columnNameList.size() - 1;
+        int reducedByOneListSize = columnNameList.size();
 
         for (int i = 0; i < reducedByOneListSize; i++) {
             String nameOfColumn = columnNameList.get(i);

@@ -13,7 +13,7 @@ import java.sql.*;
 public class DataBaseIntegratorImpl implements DataBaseIntegrator {
 
     private final String[] tables = {"TABLE"};
-    private final File initialBadWordsFile = new File("lined_bad_words.txt");
+    private final File initialBadWordsFile = new File("lined_bad_words_original.txt");
     private static final String BADWORDS_TABLE = "bad_words_table";
     private static final String TABLE_CREATION_QUERY = """
             create table bad_words_table (
@@ -29,6 +29,7 @@ public class DataBaseIntegratorImpl implements DataBaseIntegrator {
     private static final String INSERT_QUERY = "insert into bad_words_table (bad_word) values (LOWER(?))";
 
     private final DataSource dataSource;
+
     private DatabaseMetaData databaseMetaData;
 
     public DataBaseIntegratorImpl(DataSource dataSource) {
