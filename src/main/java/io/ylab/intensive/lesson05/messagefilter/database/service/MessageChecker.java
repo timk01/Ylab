@@ -7,11 +7,10 @@ import java.sql.SQLException;
 
 @Service
 public class MessageChecker {
-
     private final DataBaseIntegrator dataBaseIntegrator;
-    private final StringBuilder sbCensoredString = new StringBuilder();
-    private final StringBuilder sb = new StringBuilder();
-    private final StringBuilder sbNew = new StringBuilder();
+    private final StringBuilder censoredStringBuilder = new StringBuilder();
+    private final StringBuilder characterStringBuilder = new StringBuilder();
+    private final StringBuilder replacementStringBuilder = new StringBuilder();
     private static final char REPLACEMENT_CHARACTER = '*';
 
     public MessageChecker(DataBaseIntegrator dataBaseIntegrator) {
@@ -21,56 +20,48 @@ public class MessageChecker {
     public String getCheckedMessage(String badWordMsg) throws SQLException {
         clearAllStringBuilders();
 
-        appendAllWordsButLast(this.dataBaseIntegrator, badWordMsg, this.sbCensoredString, this.sb, this.sbNew);
+        appendAllWordsToStringBuilder(badWordMsg);
 
-        appendLastWord(this.dataBaseIntegrator, badWordMsg, this.sbCensoredString);
-
-        return this.sbCensoredString.toString();
+        return this.censoredStringBuilder.toString();
     }
 
     private void clearAllStringBuilders() {
-        sbCensoredString.setLength(0);
-        sb.setLength(0);
-        sbNew.setLength(0);
+        this.censoredStringBuilder.setLength(0);
+        this.characterStringBuilder.setLength(0);
+        this.replacementStringBuilder.setLength(0);
     }
 
-    private void appendAllWordsButLast(DataBaseIntegrator dataBaseIntegrator, String badWordMsg,
-                                       StringBuilder sbCensoredString,
-                                       StringBuilder sb, StringBuilder sbNew) throws SQLException {
+    private void appendAllWordsToStringBuilder(String badWordMsg) throws SQLException {
         char[] chars = badWordMsg.toCharArray();
 
         for (char aChar : chars) {
             if (aChar == ' ' || aChar == '.' || aChar == ','
                     || aChar == ';' || aChar == '?' || aChar == '!' || aChar == '\n') {
-                if (dataBaseIntegrator.isTheWordBad(sb.toString())) {
-                    sbNew.append(replaceAll(sb.toString()));
-                    if (!sbNew.isEmpty()) {
-                        sbCensoredString.append(sbNew);
-                        sb.setLength(0);
-                        sbNew.setLength(0);
+                if (this.dataBaseIntegrator.isTheWordBad(this.characterStringBuilder.toString())) {
+                    this.replacementStringBuilder.append(replaceAll(this.characterStringBuilder.toString()));
+                    if (!this.replacementStringBuilder.isEmpty()) {
+                        this.censoredStringBuilder.append(this.replacementStringBuilder);
+                        this.characterStringBuilder.setLength(0);
+                        this.replacementStringBuilder.setLength(0);
                     }
                 } else {
-                    sbCensoredString.append(sb);
-                    sb.setLength(0);
+                    this.censoredStringBuilder.append(this.characterStringBuilder);
+                    this.characterStringBuilder.setLength(0);
                 }
-                sbCensoredString.append(aChar);
+                this.censoredStringBuilder.append(aChar);
             } else {
-                sb.append(aChar);
+                this.characterStringBuilder.append(aChar);
             }
         }
+
+        appendLastWord(this.dataBaseIntegrator, this.characterStringBuilder.toString());
     }
 
-    private void appendLastWord(DataBaseIntegrator dataBaseIntegrator,
-                                String badWordMsg, StringBuilder sbCensoredString) throws SQLException {
-        String stringSplitter = "[ +.+,+;+?+!+\n+]";
-
-        String[] splittedString = badWordMsg.split(stringSplitter);
-
-        String s = splittedString[splittedString.length - 1];
-        if (!dataBaseIntegrator.isTheWordBad(s)) {
-            sbCensoredString.append(s);
+    private void appendLastWord(DataBaseIntegrator dataBaseIntegrator, String lastWordToCheck) throws SQLException {
+        if (!dataBaseIntegrator.isTheWordBad(lastWordToCheck)) {
+            this.censoredStringBuilder.append(lastWordToCheck);
         } else {
-            sbCensoredString.append(replaceAll(s));
+            this.censoredStringBuilder.append(replaceAll(lastWordToCheck));
         }
     }
 

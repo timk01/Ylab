@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 public class DbApp {
-
     private static final String QUEUE_NAME = "db_queue";
     private static final String SAVE_MESSAGE_TYPE = "save";
     private static final String DELETE_MESSAGE_TYPE = "delete";

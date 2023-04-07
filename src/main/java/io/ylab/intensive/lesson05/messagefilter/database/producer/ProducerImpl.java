@@ -6,7 +6,6 @@ import com.rabbitmq.client.Channel;
 import java.io.IOException;
 
 public class ProducerImpl implements Producer {
-
     private static final String QUEUE_OUTPUT_NAME = "output";
     private static final String EXCHANGE_NAME = "exchange";
     private static final String ROUTING_KEY_NAME = "ylab.output";

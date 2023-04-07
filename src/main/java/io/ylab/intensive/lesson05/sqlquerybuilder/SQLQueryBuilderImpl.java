@@ -12,7 +12,6 @@ import java.util.List;
 
 @Component
 public class SQLQueryBuilderImpl implements SQLQueryBuilder {
-
     private final DataSource dataSource;
     private DatabaseMetaData databaseMetaData;
     private final String[] tables = {"TABLE", "SYSTEM VIEW", "SYSTEM TABLE"};

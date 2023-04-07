@@ -14,7 +14,6 @@ import java.util.List;
 
 @Repository
 public class PersonRepositoryImpl implements PersonRepository {
-
     private final DataSource dataSource;
     private static final Logger logger = LoggerFactory.getLogger(PersonRepositoryImpl.class);
 

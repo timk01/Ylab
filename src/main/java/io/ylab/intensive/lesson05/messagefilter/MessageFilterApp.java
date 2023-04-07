@@ -18,7 +18,6 @@ import java.sql.SQLException;
 import java.util.concurrent.TimeoutException;
 
 public class MessageFilterApp {
-
     private static final Logger logger = LoggerFactory.getLogger(MessageFilterApp.class);
 
     public static void main(String[] args) throws SQLException, IOException, TimeoutException {

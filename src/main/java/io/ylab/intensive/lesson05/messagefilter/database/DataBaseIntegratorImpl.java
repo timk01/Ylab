@@ -11,7 +11,6 @@ import java.sql.*;
 
 @Component
 public class DataBaseIntegratorImpl implements DataBaseIntegrator {
-
     private final String[] tables = {"TABLE"};
     private final File initialBadWordsFile = new File("lined_bad_words_original.txt");
     private static final String BADWORDS_TABLE = "bad_words_table";
