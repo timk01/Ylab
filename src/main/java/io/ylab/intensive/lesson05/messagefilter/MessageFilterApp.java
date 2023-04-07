@@ -4,9 +4,11 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.GetResponse;
-import io.ylab.intensive.lesson05.messagefilter.database.ConsumerHelper;
+import io.ylab.intensive.lesson05.messagefilter.database.consumer.Consumer;
+import io.ylab.intensive.lesson05.messagefilter.database.consumer.ConsumerImpl;
 import io.ylab.intensive.lesson05.messagefilter.database.DataBaseIntegrator;
-import io.ylab.intensive.lesson05.messagefilter.database.ProducerHelper;
+import io.ylab.intensive.lesson05.messagefilter.database.producer.Producer;
+import io.ylab.intensive.lesson05.messagefilter.database.producer.ProducerImpl;
 import io.ylab.intensive.lesson05.messagefilter.database.service.MessageChecker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,9 +27,6 @@ public class MessageFilterApp {
 
         DataBaseIntegrator dataBaseIntegrator = applicationContext.getBean(DataBaseIntegrator.class);
 
-        ConsumerHelper consumerHelper = applicationContext.getBean(ConsumerHelper.class);
-        ProducerHelper producerHelper = applicationContext.getBean(ProducerHelper.class);
-
         try {
             dataBaseIntegrator.fillDbWithBadWords();
         } catch (SQLException e) {
@@ -36,6 +35,9 @@ public class MessageFilterApp {
 
         ConnectionFactory connectionFactory = applicationContext.getBean(ConnectionFactory.class);
         MessageChecker messageChecker = applicationContext.getBean(MessageChecker.class);
+
+        Consumer consumerHelper = applicationContext.getBean(ConsumerImpl.class);
+        Producer producerHelper = applicationContext.getBean(ProducerImpl.class);
 
         try (Connection connection = connectionFactory.newConnection();
              Channel channel = connection.createChannel()) {

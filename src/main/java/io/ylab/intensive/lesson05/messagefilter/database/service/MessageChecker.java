@@ -19,6 +19,7 @@ public class MessageChecker {
     }
 
     public String getCheckedMessage(String badWordMsg) throws SQLException {
+        zeroAllStringBuilders();
 
         appendAllWordsButLast(this.dataBaseIntegrator, badWordMsg, this.sbCensoredString, this.sb, this.sbNew);
 
@@ -27,10 +28,15 @@ public class MessageChecker {
         return this.sbCensoredString.toString();
     }
 
+    private void zeroAllStringBuilders() {
+        sbCensoredString.setLength(0);
+        sb.setLength(0);
+        sbNew.setLength(0);
+    }
+
     private void appendAllWordsButLast(DataBaseIntegrator dataBaseIntegrator, String badWordMsg,
                                        StringBuilder sbCensoredString,
                                        StringBuilder sb, StringBuilder sbNew) throws SQLException {
-
         char[] chars = badWordMsg.toCharArray();
 
         for (char aChar : chars) {

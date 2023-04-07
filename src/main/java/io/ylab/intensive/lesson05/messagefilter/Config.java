@@ -1,6 +1,10 @@
 package io.ylab.intensive.lesson05.messagefilter;
 
 import com.rabbitmq.client.ConnectionFactory;
+import io.ylab.intensive.lesson05.messagefilter.database.consumer.Consumer;
+import io.ylab.intensive.lesson05.messagefilter.database.consumer.ConsumerImpl;
+import io.ylab.intensive.lesson05.messagefilter.database.producer.Producer;
+import io.ylab.intensive.lesson05.messagefilter.database.producer.ProducerImpl;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -32,5 +36,15 @@ public class Config {
         dataSource.setDatabaseName("postgres");
         dataSource.setPortNumber(5432);
         return dataSource;
+    }
+
+    @Bean
+    public Producer producer() {
+        return new ProducerImpl();
+    }
+
+    @Bean
+    public Consumer consumer() {
+        return new ConsumerImpl();
     }
 }
